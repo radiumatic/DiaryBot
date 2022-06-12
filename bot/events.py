@@ -2,7 +2,7 @@ import discord,os
 import pymongo
 from discord.ext.commands import Bot
 bot = Bot(command_prefix='d.')
-Client = pymongo.MongoClient(os.getenv["DB"])
+Client = pymongo.MongoClient(os.getenv("DB"))
 DB = Client.diarybot
 Collection = DB.diary
 TOKEN = os.environ.get('TOKEN')
