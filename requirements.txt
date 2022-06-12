@@ -1,0 +1,5 @@
+py-cord==2.0.0b1
+flask
+pymongo
+dnspython
+astunparse
