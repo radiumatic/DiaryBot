@@ -138,18 +138,19 @@ async def run(ctx, *, cmd):
         embed=discord.Embed(title="خطا",description=f"{error}",color=0xFF0000)
         await ctx.reply(embed=embed)
 @bot.command()
-async def link2discord(ctx, *, link, format):
+async def link2discord(ctx, args):
+    a = args.split(" ")
     async with ctx.typing():
-        r = requests.get(link, stream=True)
+        r = requests.get(a[0], stream=True)
         file_name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(6))
-        while os.path.exists(os.path.join(os.getcwd(),file_name)):
+        while os.path.exists(os.path.join(os.getcwd(),f"{file_name}.{a[1]}")):
             file_name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(6))
-        if int(r.headers.get('content-length', 0)) > 1048576:
+        if int(r.headers.get('content-length', 0)) > 8388608:
             embed=discord.Embed(title="خطا",description="داداش بزرگه\nبا وازلین هم رد نمیشه از فیلتر دیسکورد",color=0xFF0000)
             await ctx.reply(embed=embed)
             return 
         if r.status_code == 200:
-            with open(file_name + format, 'wb') as f:
+            with open(f"{file_name}.{a[1]}" + format, 'wb') as f:
                 r.raw.decode_content = True
                 shutil.copyfileobj(r.raw, f)
         else:
@@ -157,7 +158,7 @@ async def link2discord(ctx, *, link, format):
             await ctx.reply(embed=embed)
             return
         await ctx.send(file=discord.File('tescct.mp4'))
-        os.remove(os.path.join(os.getcwd(),file_name + format))
+        os.remove(os.path.join(os.getcwd(),f"{file_name}.{a[1]}"))
 
         
 
