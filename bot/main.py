@@ -138,7 +138,7 @@ async def run(ctx, *, cmd):
         embed=discord.Embed(title="خطا",description=f"{error}",color=0xFF0000)
         await ctx.reply(embed=embed)
 @bot.command()
-async def link2discord(ctx, args):
+async def link2discord(ctx, *, args):
     a = args.split(" ")
     async with ctx.typing():
         r = requests.get(a[0], stream=True)
