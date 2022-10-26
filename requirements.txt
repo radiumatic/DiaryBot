@@ -1,5 +1,6 @@
-py-cord==2.0.0b1
+py-cord
 flask
 pymongo
 dnspython
 astunparse
+requests

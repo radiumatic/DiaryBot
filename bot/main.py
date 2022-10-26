@@ -1,12 +1,10 @@
-from http.server import executable
 import textwrap
 import discord,os
 from discord.ext import commands
 from make_online_bot_server import alive
 import io
 import contextlib
-import ast
-import astunparse
+import requests, shutil, random, string
 TOKEN = os.environ.get('TOKEN')
 bot = commands.Bot(command_prefix='d.')
 bot.remove_command('help')
@@ -139,6 +137,28 @@ async def run(ctx, *, cmd):
     except Exception as error:
         embed=discord.Embed(title="خطا",description=f"{error}",color=0xFF0000)
         await ctx.reply(embed=embed)
+@bot.command()
+async def link2discord(ctx, *, link):
+    async with ctx.typing():
+        r = requests.get(link, stream=True)
+        file_name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(6))
+        while os.path.exists(os.path.join(os.getcwd(),file_name)):
+            file_name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(6))
+        if r.headers.get('content-length', 0) > 1048576:
+            embed=discord.Embed(title="خطا",description="داداش بزرگه\nبا وازلین هم رد نمیشه از فیلتر دیسکورد",color=0xFF0000)
+            await ctx.reply(embed=embed)
+            return 
+        if r.status_code == 200:
+            with open("tescct.mp4", 'wb') as f:
+                r.raw.decode_content = True
+                shutil.copyfileobj(r.raw, f)
+        else:
+            embed=discord.Embed(title="خطا",description=f"داش لینکت یا من یا یه چیزی ایراد داشته تو شبکه\nحوصله ندارم خودت یه نگاه بنداز:\n```{requests.text}```",color=0xFF0000)
+            await ctx.reply(embed=embed)
+            return
+        await ctx.send(file=discord.File('tescct.mp4'))
+        os.remove(os.path.join(os.getcwd(),file_name))
+
         
 
 
