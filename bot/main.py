@@ -150,7 +150,7 @@ async def link2discord(ctx, *, args):
             await ctx.reply(embed=embed)
             return 
         if r.status_code == 200:
-            with open(f"{file_name}.{a[1]}" + format, 'wb') as f:
+            with open(f"{file_name}.{a[1]}", 'wb') as f:
                 r.raw.decode_content = True
                 shutil.copyfileobj(r.raw, f)
         else:
