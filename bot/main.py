@@ -138,7 +138,7 @@ async def run(ctx, *, cmd):
         embed=discord.Embed(title="خطا",description=f"{error}",color=0xFF0000)
         await ctx.reply(embed=embed)
 @bot.command()
-async def link2discord(ctx, *, link):
+async def link2discord(ctx, *, link, format):
     async with ctx.typing():
         r = requests.get(link, stream=True)
         file_name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(6))
@@ -149,7 +149,7 @@ async def link2discord(ctx, *, link):
             await ctx.reply(embed=embed)
             return 
         if r.status_code == 200:
-            with open("tescct.mp4", 'wb') as f:
+            with open(file_name + format, 'wb') as f:
                 r.raw.decode_content = True
                 shutil.copyfileobj(r.raw, f)
         else:
@@ -157,7 +157,7 @@ async def link2discord(ctx, *, link):
             await ctx.reply(embed=embed)
             return
         await ctx.send(file=discord.File('tescct.mp4'))
-        os.remove(os.path.join(os.getcwd(),file_name))
+        os.remove(os.path.join(os.getcwd(),file_name + format))
 
         
 
