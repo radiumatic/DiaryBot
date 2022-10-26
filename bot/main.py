@@ -87,7 +87,7 @@ async def userinfo(ctx, member: discord.Member = None):
 #       output=f"ارور داد :( :\n{error}"
 #     embed=discord.Embed(title="ران شد :)",description=f"بیا اینم نتیجه:\n```python\n{output}```")
 #     await ctx.reply(embed=embed)
-# @bot.command()
+@bot.command()
 async def link2discord(ctx, *, args):
     a = args.split(" ")
     async with ctx.typing():
