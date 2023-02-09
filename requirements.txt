@@ -1,6 +1,8 @@
-discord.py
+py-cord
 flask
 pymongo
 dnspython
 astunparse
 requests
+youtube-dl
+python-dotenv

@@ -4,9 +4,15 @@ from discord.ext import commands
 from make_online_bot_server import alive
 import io
 import contextlib
-import requests, shutil, random, string
+import requests, shutil, random, string, pymongo
+from events import Notebook
+import youtube_dl
+from dotenv import load_dotenv
+load_dotenv()
 TOKEN = os.environ.get('TOKEN')
-bot = commands.Bot(command_prefix='d.')
+intents = discord.Intents.default()
+intents.message_content = True
+bot = commands.Bot(command_prefix='d.', intents=intents)
 bot.remove_command('help')
 
 HelpEmbed = discord.Embed(title="راهنما", description="**نکته مهم**\nاین بات تنها در دی ام فردی که هنگام تنظیم بات مشخص شده است کار خواهد کرد و این کامند ها اصل بات نیستند.", color=0x00ff00)
@@ -17,7 +23,10 @@ HelpEmbed.add_field(name="d.serverinfo", value="نمایش اطلاعات سرو
 HelpEmbed.add_field(name="d.userinfo", value="نمایش اطلاعات کاربر", inline=False)
 HelpEmbed.add_field(name="d.run", value="اجرای کد پایتون دریافتی(تنها مختص صاحب بات)", inline=False)
 
-Owner = os.getenv('OWNER')
+DBClient = pymongo.MongoClient(os.getenv("DB"))
+DB = DBClient.diarybot
+Collection = DB.diary.diary
+Owner = int(os.getenv('OWNER'))
 
 
 @bot.event
@@ -66,27 +75,6 @@ async def userinfo(ctx, member: discord.Member = None):
     await ctx.reply(embed=embed)
 
 
-# @bot.command()
-# async def run(ctx, *, code: str = None):
-#     print(ctx.author,Owner)
-#     if not str(ctx.author) == str(Owner):
-#         await ctx.reply('You are not the owner of this bot!')
-#         return
-#     if not code:
-#       embed=discord.Embed(title="خطا",description="منو سرکار گذاشتی یا خودتو که کامند میزنی ولی دستور نمیدی؟",color=0xFF0000)
-#       embed.set_image(url="https://cdn.thingiverse.com/assets/83/5c/96/ee/81/featured_preview_Crm4_G3uns8_1.jpg")
-#       await ctx.reply(embed)
-#       return
-
-#     str_obj = io.StringIO() #Retrieves a stream of data
-#     try:
-#       with contextlib.redirect_stdout(str_obj):
-#         exec(code)
-#       output=str_obj.getvalue()  
-#     except Exception as error:
-#       output=f"ارور داد :( :\n{error}"
-#     embed=discord.Embed(title="ران شد :)",description=f"بیا اینم نتیجه:\n```python\n{output}```")
-#     await ctx.reply(embed=embed)
 @bot.command()
 async def link2discord(ctx, *, args):
     a = args.split(" ")
@@ -110,31 +98,34 @@ async def link2discord(ctx, *, args):
         await ctx.send(file=discord.File(f"{file_name}.{a[1]}"))
         os.remove(os.path.join(os.getcwd(),f"{file_name}.{a[1]}"))
 @bot.command()
+async def dlvid(ctx, *urls):
+    await ctx.reply("Sure, your videos will soon arrive.")
+    file_names = []
+    vidprop = {
+        'format':'filesize<=8M/mp4',
+        'outtmpl': '%(id)s.%(ext)s'
+    }
+    async with ctx.typing():
+        try:
+            with youtube_dl.YoutubeDL(vidprop) as ydl:
+                for url in urls:
+                    info = ydl.extract_info(url, download=True)
+                    # Copy info dict and change video extension to audio extension
+                    info_with_extension = dict(info)
+                    info_with_extension['ext'] = 'mp4'
+                    # Return filename with the correct extension
+                    file_names.append(ydl.prepare_filename(info_with_extension))
+            for file_name in file_names:
+                name=os.path.join(os.getcwd(),file_name)
+                await ctx.send(file=discord.File(name))
+                os.remove(name)
+            await ctx.send("Lemme guess...\n We're finished?")
+        except Exception as error:
+            embed=discord.Embed(title="Error",description=f"Yeah yeah...\nJust understand this error and do fucking something about it\n```{error}```",color=0xFF0000)
+            await ctx.reply(embed=embed)
+@bot.command()
 async def run(ctx, *, cmd):
-    """Run input.
-    Input is interpreted as newline seperated statements.
-    Its just like Python shell,It runs your code and after running it returns the outputs created
-    Usable globals:
-      - `bot`: the bot instance
-      - `discord`: the discord module
-      - `commands`: the discord.ext.commands module
-      - `ctx`: the invokation context
-      - `__import__`: the builtin `__import__` function
-    Such that `>eval 1 + 1` gives `2` as the result.
-    The following invokation will cause the bot to send the text '9'
-    to the channel of invokation and return '3' as the result of evaluating
-    >eval ```
-    a = 1 + 2
-    b = a * 2
-    await ctx.send(a + b)
-    a
-    ```
-    ```
-    print("5")
-    ```
-    It also supports await expressions.So you can manage your server with ease.
-    """
-    if str(ctx.author) != str(Owner):
+    if str(ctx.author.id) != Owner:
         await ctx.reply('You are not the owner of this bot!')
         return
     env = {
@@ -158,5 +149,7 @@ async def run(ctx, *, cmd):
     except Exception as error:
         embed=discord.Embed(title="خطا",description=f"{error}",color=0xFF0000)
         await ctx.reply(embed=embed)
+
 alive()
+bot.add_cog(Notebook(Owner, Collection))
 bot.run(os.getenv('TOKEN'))
