@@ -4,9 +4,9 @@ from discord.ext import commands
 from make_online_bot_server import alive
 import io
 import contextlib
-import requests, shutil, random, string, pymongo
+import requests,json, shutil, random, string, pymongo
 from events import Notebook
-import youtube_dl
+import yt_dlp
 from dotenv import load_dotenv
 load_dotenv()
 TOKEN = os.environ.get('TOKEN')
@@ -102,7 +102,7 @@ async def dlvid(ctx, *urls):
     await ctx.reply("Sure, your videos will soon arrive.")
     file_names = []
     vidprop = {
-        'format':'best[filesize<8M]',
+        'format':'[filesize_approx<=8M]/[filesize<=8M]',
         'outtmpl': '%(id)s.%(ext)s',
         'merge-output-format':'mp4',
         'postprocessors': [{
@@ -112,11 +112,11 @@ async def dlvid(ctx, *urls):
     }
     async with ctx.typing():
         try:
-            with youtube_dl.YoutubeDL(vidprop) as ydl:
+            with yt_dlp.YoutubeDL(vidprop) as ydl:
                 for url in urls:
                     info = ydl.extract_info(url, download=True)
                     # Copy info dict and change video extension to audio extension
-                    info_with_extension = dict(info)
+                    info_with_extension = json.loads(ydl.sanitize_info(info))
                     info_with_extension['ext'] = 'mp4'
                     # Return filename with the correct extension
                     file_names.append(ydl.prepare_filename(info_with_extension))
