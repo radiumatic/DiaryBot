@@ -93,7 +93,7 @@ async def link2discord(ctx, *, args):
                     r.raw.decode_content = True
                     shutil.copyfileobj(r.raw, f)
             else:
-                embed=discord.Embed(title="خطا",description=f"داش لینکت یا من یا یه چیزی ایراد داشته تو شبکه\nحوصله ندارم خودت یه نگاه بنداز:\n```{requests.text}```",color=0xFF0000)
+                embed=discord.Embed(title="خطا",description=f"داش لینکت یا من یا یه چیزی ایراد داشته تو شبکه\nحوصله ندارم خودت یه نگاه بنداز:\n```{r.text}```",color=0xFF0000)
                 await ctx.reply(embed=embed)
                 return
             await ctx.send(file=discord.File(f"{file_name}.{a[1]}"))
