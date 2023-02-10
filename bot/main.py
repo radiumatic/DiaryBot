@@ -116,7 +116,7 @@ async def dlvid(ctx, *urls):
                 for url in urls:
                     info = ydl.extract_info(url, download=True)
                     # Copy info dict and change video extension to audio extension
-                    info_with_extension = json.loads(ydl.sanitize_info(info))
+                    info_with_extension = ydl.sanitize_info(info)
                     info_with_extension['ext'] = 'mp4'
                     # Return filename with the correct extension
                     file_names.append(ydl.prepare_filename(info_with_extension))
