@@ -102,8 +102,13 @@ async def dlvid(ctx, *urls):
     await ctx.reply("Sure, your videos will soon arrive.")
     file_names = []
     vidprop = {
-        'format':'filesize<=8M/mp4',
-        'outtmpl': '%(id)s.%(ext)s'
+        'format':'filesize<=8M',
+        'outtmpl': '%(id)s.%(ext)s',
+        'merge-output-format':'mp4',
+        'postprocessors': [{
+            'key': 'FFmpegVideoConvertor',
+            'preferedformat': 'mp4'
+        }]
     }
     async with ctx.typing():
         try:
