@@ -4,5 +4,5 @@ pymongo
 dnspython
 astunparse
 requests
-youtube-dl
+yt-dlp
 python-dotenv
