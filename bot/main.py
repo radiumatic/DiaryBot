@@ -102,7 +102,7 @@ async def dlvid(ctx, *urls):
     await ctx.reply("Sure, your videos will soon arrive.")
     file_names = []
     vidprop = {
-        'format':'filesize<=8M',
+        'format':'filesize<8M',
         'outtmpl': '%(id)s.%(ext)s',
         'merge-output-format':'mp4',
         'postprocessors': [{
@@ -130,7 +130,7 @@ async def dlvid(ctx, *urls):
             await ctx.reply(embed=embed)
 @bot.command()
 async def run(ctx, *, cmd):
-    if str(ctx.author.id) != Owner:
+    if ctx.author.id != Owner:
         await ctx.reply('You are not the owner of this bot!')
         return
     env = {
