@@ -102,7 +102,7 @@ async def dlvid(ctx, *urls):
     await ctx.reply("Sure, your videos will soon arrive.")
     file_names = []
     vidprop = {
-        'format':'[filesize_approx<=8M]/[filesize<=8M]',
+        'format':'mp4[filesize_approx<=8M]/mp4[filesize<=8M]/[filesize_approx<=8M]/[filesize<=8M]',
         'outtmpl': '%(id)s.%(ext)s',
         'merge-output-format':'mp4',
         'postprocessors': [{
