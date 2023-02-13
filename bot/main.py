@@ -102,18 +102,20 @@ async def link2discord(ctx, *, args):
             embed=discord.Embed(title="Error",description=f"Yeah yeah...\nJust understand this error and do fucking something about it\n```{error}```",color=0xFF0000)
             await ctx.reply(embed=embed)
 @bot.command()
-async def dlvid(ctx, *urls):
+async def dlvid(ctx, mp4, *urls):
     await ctx.reply("Sure, your videos will soon arrive.")
     file_names = []
     vidprop = {
         'format':'mp4[filesize_approx<=8M]/mp4[filesize<=8M]/[filesize_approx<=8M]/[filesize<=8M]',
         'outtmpl': '%(id)s.%(ext)s',
-        'merge-output-format':'mp4',
-        'postprocessors': [{
+        'merge-output-format':'mp4'
+    }
+    if "y" in lower(str(mp4)):
+        vidprop['postprocessors'] = [{
             'key': 'FFmpegVideoConvertor',
             'preferedformat': 'mp4'
         }]
-    }
+
     async with ctx.typing():
         try:
             with yt_dlp.YoutubeDL(vidprop) as ydl:
