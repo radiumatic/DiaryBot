@@ -110,7 +110,7 @@ async def dlvid(ctx, mp4, *urls):
         'outtmpl': '%(id)s.%(ext)s',
         'merge-output-format':'mp4'
     }
-    if "y" in lower(str(mp4)):
+    if "y" in str(mp4).lower():
         vidprop['postprocessors'] = [{
             'key': 'FFmpegVideoConvertor',
             'preferedformat': 'mp4'
