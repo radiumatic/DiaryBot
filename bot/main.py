@@ -84,7 +84,7 @@ async def link2discord(ctx, *, args):
             file_name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(6))
             while os.path.exists(os.path.join(os.getcwd(),f"{file_name}.{a[1]}")):
                 file_name = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(6))
-            if int(r.headers.get('content-length', 0)) > 8388608:
+            if int(r.headers.get('content-length', 0)) > 25600:
                 embed=discord.Embed(title="خطا",description="داداش بزرگه\nبا وازلین هم رد نمیشه از فیلتر دیسکورد",color=0xFF0000)
                 await ctx.reply(embed=embed)
                 return 
